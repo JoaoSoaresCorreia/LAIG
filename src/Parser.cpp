@@ -21,4 +21,6 @@ Parser::Parser(char *filename){
 
 	//First Approach:  <graph rootid="ss"> ----- <primitives>
 
+
+
 }
