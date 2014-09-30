@@ -12,14 +12,24 @@ class Parser{
 
 protected:
 
+	//root
 	TiXmlDocument* document;
+	
+	//globals tag
+	TiXmlElement* globals;
 
+	//graph tag
+	TiXmlElement* graph;
+
+	
 	TiXmlElement* initElement; 
 	TiXmlElement* matsElement;
 	TiXmlElement* textsElement;
+
+	//primitives??
 	TiXmlElement* leavesElement;
 	TiXmlElement* nodesElement;
-	TiXmlElement* graphElement;
+	
 
 };
 
