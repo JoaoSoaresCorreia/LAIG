@@ -1,0 +1,140 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{3A4F1E3F-8862-4892-A1EA-E3EE90BE15AB}</ProjectGuid>
+    <RootNamespace>CGFexample</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>bin\</OutDir>
+    <LibraryPath>lib;$(VCInstallDir)lib;$(VCInstallDir)atlmfc\lib;$(WindowsSdkDir)lib;$(FrameworkSDKDir)\lib</LibraryPath>
+    <IncludePath>include\CGF;include;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include;</IncludePath>
+    <IntDir>..\buildtemp\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>C:\Users\John Doe\Desktop\FEUP\LAIG\CGFexample\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>glew32.lib;CGFlib.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;TinyXML.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>LIBCMT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="src\DemoScene.cpp" />
+    <ClCompile Include="src\ExampleObject.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Parser.cpp" />
+    <ClCompile Include="src\XMLScene.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\cgf\cgfappearance.h" />
+    <ClInclude Include="include\cgf\cgfapplication.h" />
+    <ClInclude Include="include\cgf\cgfaxis.h" />
+    <ClInclude Include="include\cgf\cgfcamera.h" />
+    <ClInclude Include="include\cgf\cgfinterface.h" />
+    <ClInclude Include="include\cgf\cgflight.h" />
+    <ClInclude Include="include\cgf\cgfobject.h" />
+    <ClInclude Include="include\cgf\cgfscene.h" />
+    <ClInclude Include="include\cgf\cgfshader.h" />
+    <ClInclude Include="include\cgf\cgftexture.h" />
+    <ClInclude Include="include\glui.h" />
+    <ClInclude Include="include\glut.h" />
+    <ClInclude Include="include\GL\glew.h" />
+    <ClInclude Include="include\GL\glext.h" />
+    <ClInclude Include="include\gl\glui.h" />
+    <ClInclude Include="include\gl\glut.h" />
+    <ClInclude Include="include\GL\glxew.h" />
+    <ClInclude Include="include\GL\wglew.h" />
+    <ClInclude Include="include\Parser.h" />
+    <ClInclude Include="include\tinystr.h" />
+    <ClInclude Include="include\tinyxml.h" />
+    <ClInclude Include="include\xmlscene.h" />
+    <ClInclude Include="src\DemoScene.h" />
+    <ClInclude Include="src\ExampleObject.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include=".cproject" />
+    <None Include=".gitignore" />
+    <None Include=".project" />
+    <None Include=".settings\org.eclipse.cdt.codan.core.prefs" />
+    <None Include=".settings\org.eclipse.cdt.managedbuilder.core.prefs" />
+    <None Include="bin\CGFexample.exe" />
+    <None Include="bin\CGFexample.ilk" />
+    <None Include="bin\CGFexample.pdb" />
+    <None Include="bin\demograph.xml" />
+    <None Include="bin\glew32.dll" />
+    <None Include="bin\glu32.dll" />
+    <None Include="bin\glut32.dll" />
+    <None Include="CGFExample.launch" />
+    <None Include="data\pyramid.jpg" />
+    <None Include="data\texshader.frag" />
+    <None Include="data\texshader.vert" />
+    <None Include="ipch\cgfexample-3cc4a5f3\cgfexample-340412b7.ipch" />
+    <None Include="lib\.gitignore" />
+    <None Include="lib\README.txt" />
+    <None Include="makefile" />
+    <None Include="obj\.gitignore" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="lib\CGFlib.lib" />
+    <Library Include="lib\glew32.lib" />
+    <Library Include="lib\glew32mx.lib" />
+    <Library Include="lib\glew32mxs.lib" />
+    <Library Include="lib\glew32s.lib" />
+    <Library Include="lib\glui32.lib" />
+    <Library Include="lib\glui32d.lib" />
+    <Library Include="lib\glut32.lib" />
+    <Library Include="lib\TinyXML.lib" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
