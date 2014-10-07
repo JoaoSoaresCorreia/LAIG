@@ -25,9 +25,6 @@ Parser::Parser(char *filename){
 		exit(1);
 	}
 
-
-	//First Approach:  <graph rootid="ss"> ----- <primitives>
-
 	globals = root->FirstChildElement();
 
 	cameras = globals->NextSiblingElement("cameras");
@@ -49,6 +46,31 @@ Parser::Parser(char *filename){
 	}
 	else
 	{
+		TiXmlElement* drawing = globals->FirstChildElement("drawing");
+
+		if(drawing)
+		{
+			printf("Inside drawing \n");
+			//values to object
+		}
+
+
+		TiXmlElement* culling = globals->FirstChildElement("culling");
+
+		if(culling)
+		{
+			printf("Inside culling \n");
+			//values to object
+		}
+
+
+		TiXmlElement* lighting = globals->FirstChildElement("lighting");
+
+		if(lighting)
+		{
+			printf("Inside lighting \n");
+			//values to object
+		}
 
 	}
 
@@ -79,6 +101,15 @@ Parser::Parser(char *filename){
 
 					printf("Inside primitives \n");
 
+					TiXmlElement *object_primitive = child->FirstChildElement();
+
+					while(object_primitive){
+
+						/*Inside primitives, and recognition of primitive*/
+						/*Create object based on primitive*/
+
+						object_primitive = object_primitive->NextSiblingElement();
+					}
 
 					/*
 					// access node data by searching for its id in the nodes section
