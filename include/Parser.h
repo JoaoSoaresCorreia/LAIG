@@ -4,10 +4,9 @@
 #include "tinyxml.h"
 
 class Parser{
-
+public:
 	Parser(char *filename);
 	~Parser();
-
 	static TiXmlElement *findChildByAttribute(TiXmlElement *parent,const char * attr, const char *val);
 
 protected:
@@ -18,17 +17,24 @@ protected:
 	//globals tag
 	TiXmlElement* globals;
 
+	//cameras tag
+	TiXmlElement* cameras;
+
+	//lights tag
+	TiXmlElement* lights;
+	
+	//textures tag
+	TiXmlElement* textures;
+
+	//appearances tag
+	TiXmlElement* appearances;
+
 	//graph tag
 	TiXmlElement* graph;
 
+	////nodes tag
+	TiXmlElement* node;
 	
-	TiXmlElement* initElement; 
-	TiXmlElement* matsElement;
-	TiXmlElement* textsElement;
-
-	//primitives??
-	TiXmlElement* leavesElement;
-	TiXmlElement* nodesElement;
 	
 
 };

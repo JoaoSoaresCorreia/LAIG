@@ -3,12 +3,16 @@
 
 #include "CGFapplication.h"
 #include "DemoScene.h"
+#include "Parser.h"
 
 using std::cout;
 using std::exception;
 
 
 int main(int argc, char* argv[]) {
+
+	Parser *p = new Parser("graph.anf");
+	printf("Done, Created!");
 
 /*
 	CGFapplication app = CGFapplication();

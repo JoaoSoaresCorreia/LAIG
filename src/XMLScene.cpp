@@ -93,8 +93,10 @@ XMLScene::XMLScene(char *filename)
 
 		while (node)
 		{
+
 			printf("Node id '%s' - Descendants:\n",node->Attribute("id"));
 			TiXmlElement *child=node->FirstChildElement();
+
 			while (child)
 			{
 				if (strcmp(child->Value(),"Node")==0)

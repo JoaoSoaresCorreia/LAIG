@@ -30,12 +30,98 @@ Parser::Parser(char *filename){
 
 	globals = root->FirstChildElement();
 
+	cameras = globals->NextSiblingElement("cameras");
+
+	lights = globals->NextSiblingElement("lights");
+
+	textures = globals->NextSiblingElement("texxtures");
+
+	appearances = globals->NextSiblingElement("appearances");
+
 	graph = globals->NextSiblingElement("graph");
 
-	nodesElement = graph->FirstChildElement();
 
-	leavesElement = nodesElement -> FirstChildElement("primitives");
+	/*Globals Section*/
+	if(globals == NULL)
+	{
+		printf("globals element not found! Exiting!\n");
+		//exit(1);
+	}
+	else
+	{
 
-	//test method only!
+	}
+
+
+	/*Graph Section*/
+
+	if(graph == NULL)
+	{
+		printf("graph element not found! Exiting!\n");
+		//exit(1);
+	}
+	else
+	{
+		//printf("Graph root id = %s ", graph->Attribute("rootid"));
+		node = graph->FirstChildElement();
+		char *prefix="  -";
+
+		while(node)
+		{
+			printf("Node id '%s' \n", node->Attribute("id"));
+			TiXmlElement *child=node->FirstChildElement();
+			
+			while(child)
+			{
+				if (strcmp(child->Value(),"primitives")==0)
+				{
+					//access primitives information
+
+					printf("Inside primitives \n");
+
+
+					/*
+					// access node data by searching for its id in the nodes section
+					
+					TiXmlElement *noderef=findChildByAttribute(nodesElement,"id",child->Attribute("id"));
+
+					if (noderef)
+					{
+						// print id
+						printf("  - Node id: '%s'\n", child->Attribute("id"));
+
+						// prints some of the data
+						printf("    - Material id: '%s' \n", noderef->FirstChildElement("material")->Attribute("id"));
+						printf("    - Texture id: '%s' \n", noderef->FirstChildElement("texture")->Attribute("id"));
+
+						// repeat for other leaf details
+					}
+					else
+						printf("  - Node id: '%s': NOT FOUND IN THE NODES SECTION\n", child->Attribute("id"));
+						*/
+
+				}
+				/*
+				if (strcmp(child->Value(),"Leaf")==0)
+				{
+					// access leaf data by searching for its id in the leaves section
+					TiXmlElement *leaf=findChildByAttribute(leavesElement,"id",child->Attribute("id"));
+
+					if (leaf)
+					{
+						// it is a leaf and it is present in the leaves section
+						printf("  - Leaf id: '%s' ; type: '%s'\n", child->Attribute("id"), leaf->Attribute("type"));
+
+						// repeat for other leaf details
+					}
+					else
+						printf("  - Leaf id: '%s' - NOT FOUND IN THE LEAVES SECTION\n",child->Attribute("id"));
+				}
+				*/
+				child=child->NextSiblingElement();
+			}
+			node=node->NextSiblingElement();
+		}
+	}
 
 }
