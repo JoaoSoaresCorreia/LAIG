@@ -23,17 +23,30 @@ protected:
 	//lights tag
 	TiXmlElement* lights;
 	
+	////light tag
+	TiXmlElement* light;
+
 	//textures tag
 	TiXmlElement* textures;
+
+	//texture tag
+	TiXmlElement* texture;
 
 	//appearances tag
 	TiXmlElement* appearances;
 
+	////appearances tag
+	TiXmlElement* appearance;
+
+	//////component
+
 	//graph tag
 	TiXmlElement* graph;
 
-	////nodes tag
+	////node tag
 	TiXmlElement* node;
+
+	
 	
 	
 

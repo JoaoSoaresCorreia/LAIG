@@ -11,7 +11,7 @@ using std::exception;
 
 int main(int argc, char* argv[]) {
 
-	Parser *p = new Parser("graph.anf");
+	Parser *p = new Parser("graph_beta.anf");
 	printf("Done, Created!");
 
 /*

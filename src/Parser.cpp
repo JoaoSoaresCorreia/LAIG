@@ -31,7 +31,7 @@ Parser::Parser(char *filename){
 
 	lights = globals->NextSiblingElement("lights");
 
-	textures = globals->NextSiblingElement("texxtures");
+	textures = globals->NextSiblingElement("textures");
 
 	appearances = globals->NextSiblingElement("appearances");
 
@@ -75,6 +75,108 @@ Parser::Parser(char *filename){
 	}
 
 
+	/*Cameras Section*/
+
+	if(cameras == NULL){
+		printf("cameras element not found! Exiting!\n");
+		//exit(1);
+	}
+	else{
+
+		TiXmlElement* perspective = cameras->FirstChildElement("perspective");
+
+		if(perspective){
+			printf("Inside perspective \n");
+			//values to object
+		}
+
+		TiXmlElement* ortho = cameras->FirstChildElement("ortho");
+
+		if(ortho){
+			printf("Inside ortho \n");
+			//values to object
+		}
+	}
+
+	if(lights == NULL){
+		printf("lights element not found! Exiting!\n");
+		//exit(1);
+	}
+	else
+	{
+		light = lights->FirstChildElement();
+
+		while(light)
+		{
+
+			printf("Light id '%s' \n", light->Attribute("id"));
+
+			TiXmlElement *component=light->FirstChildElement();
+
+			while(component)
+			{
+
+				printf("Inside component \n");
+				component=component->NextSiblingElement();
+			}
+
+			light=light->NextSiblingElement();
+		}
+
+	}
+
+
+	/*Textures Section*/
+
+	if(textures == NULL)
+	{
+		printf("textures element not found! Exiting!\n");
+		//exit(1);
+	}
+	else
+	{
+
+		texture = textures->FirstChildElement();
+
+		while(texture)
+		{
+			printf("Texture id '%s' \n", texture->Attribute("id"));
+			texture=texture->NextSiblingElement();
+		}
+
+	}
+
+
+	/*Appearence Section*/
+
+	if(appearances == NULL)
+	{
+		printf("appearances element not found! Exiting!\n");
+		//exit(1);
+	}
+	else
+	{
+		appearance = appearances->FirstChildElement();
+
+		while(appearance)
+		{
+
+			printf("Appearance id '%s' \n", appearance->Attribute("id"));
+
+			TiXmlElement *component=appearance->FirstChildElement();
+
+			while(component)
+			{
+				printf("Inside component \n");
+				component=component->NextSiblingElement();
+			}
+
+			appearance=appearance->NextSiblingElement();
+
+		}
+	}
+
+
 	/*Graph Section*/
 
 	if(graph == NULL)
@@ -92,7 +194,7 @@ Parser::Parser(char *filename){
 		{
 			printf("Node id '%s' \n", node->Attribute("id"));
 			TiXmlElement *child=node->FirstChildElement();
-			
+
 			while(child)
 			{
 				if (strcmp(child->Value(),"primitives")==0)
@@ -108,45 +210,47 @@ Parser::Parser(char *filename){
 						/*Inside primitives, and recognition of primitive*/
 						/*Create object based on primitive*/
 
+						printf("primitive: '%s' \n", object_primitive->Value());
+
 						object_primitive = object_primitive->NextSiblingElement();
 					}
 
 					/*
 					// access node data by searching for its id in the nodes section
-					
+
 					TiXmlElement *noderef=findChildByAttribute(nodesElement,"id",child->Attribute("id"));
 
 					if (noderef)
 					{
-						// print id
-						printf("  - Node id: '%s'\n", child->Attribute("id"));
+					// print id
+					printf("  - Node id: '%s'\n", child->Attribute("id"));
 
-						// prints some of the data
-						printf("    - Material id: '%s' \n", noderef->FirstChildElement("material")->Attribute("id"));
-						printf("    - Texture id: '%s' \n", noderef->FirstChildElement("texture")->Attribute("id"));
+					// prints some of the data
+					printf("    - Material id: '%s' \n", noderef->FirstChildElement("material")->Attribute("id"));
+					printf("    - Texture id: '%s' \n", noderef->FirstChildElement("texture")->Attribute("id"));
 
-						// repeat for other leaf details
+					// repeat for other leaf details
 					}
 					else
-						printf("  - Node id: '%s': NOT FOUND IN THE NODES SECTION\n", child->Attribute("id"));
-						*/
+					printf("  - Node id: '%s': NOT FOUND IN THE NODES SECTION\n", child->Attribute("id"));
+					*/
 
 				}
 				/*
 				if (strcmp(child->Value(),"Leaf")==0)
 				{
-					// access leaf data by searching for its id in the leaves section
-					TiXmlElement *leaf=findChildByAttribute(leavesElement,"id",child->Attribute("id"));
+				// access leaf data by searching for its id in the leaves section
+				TiXmlElement *leaf=findChildByAttribute(leavesElement,"id",child->Attribute("id"));
 
-					if (leaf)
-					{
-						// it is a leaf and it is present in the leaves section
-						printf("  - Leaf id: '%s' ; type: '%s'\n", child->Attribute("id"), leaf->Attribute("type"));
+				if (leaf)
+				{
+				// it is a leaf and it is present in the leaves section
+				printf("  - Leaf id: '%s' ; type: '%s'\n", child->Attribute("id"), leaf->Attribute("type"));
 
-						// repeat for other leaf details
-					}
-					else
-						printf("  - Leaf id: '%s' - NOT FOUND IN THE LEAVES SECTION\n",child->Attribute("id"));
+				// repeat for other leaf details
+				}
+				else
+				printf("  - Leaf id: '%s' - NOT FOUND IN THE LEAVES SECTION\n",child->Attribute("id"));
 				}
 				*/
 				child=child->NextSiblingElement();
