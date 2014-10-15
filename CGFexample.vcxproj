@@ -70,6 +70,7 @@
   <ItemGroup>
     <ClCompile Include="src\DemoScene.cpp" />
     <ClCompile Include="src\ExampleObject.cpp" />
+    <ClCompile Include="src\Globals.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Parser.cpp" />
     <ClCompile Include="src\XMLScene.cpp" />
@@ -85,6 +86,7 @@
     <ClInclude Include="include\cgf\cgfscene.h" />
     <ClInclude Include="include\cgf\cgfshader.h" />
     <ClInclude Include="include\cgf\cgftexture.h" />
+    <ClInclude Include="include\Globals.h" />
     <ClInclude Include="include\glui.h" />
     <ClInclude Include="include\glut.h" />
     <ClInclude Include="include\GL\glew.h" />

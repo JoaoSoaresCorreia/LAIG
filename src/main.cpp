@@ -14,6 +14,8 @@ int main(int argc, char* argv[]) {
 	Parser *p = new Parser("graph_beta.anf");
 	printf("Done, Created!");
 
+
+
 /*
 	CGFapplication app = CGFapplication();
 

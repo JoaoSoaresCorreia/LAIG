@@ -2,6 +2,10 @@
 #define _PARSER_H_
 
 #include "tinyxml.h"
+#include <string>
+#include <iostream>
+
+using namespace std;
 
 class Parser{
 public:
