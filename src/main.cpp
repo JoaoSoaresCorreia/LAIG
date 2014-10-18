@@ -4,6 +4,7 @@
 #include "CGFapplication.h"
 #include "DemoScene.h"
 #include "Parser.h"
+#include "Globals.h"
 
 using std::cout;
 using std::exception;
@@ -13,7 +14,7 @@ int main(int argc, char* argv[]) {
 
 	Parser *p = new Parser("graph_beta.anf");
 	printf("Done, Created!");
-
+	cout<<"OrthoID= "<< p->get_o_cameras()[0].get_id() << endl;
 
 
 /*

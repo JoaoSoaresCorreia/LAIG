@@ -68,14 +68,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Appearance.cpp" />
     <ClCompile Include="src\DemoScene.cpp" />
     <ClCompile Include="src\ExampleObject.cpp" />
     <ClCompile Include="src\Globals.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\OmniLight.cpp" />
     <ClCompile Include="src\Parser.cpp" />
+    <ClCompile Include="src\PerspectiveCamera.cpp" />
+    <ClCompile Include="src\SpotLight.cpp" />
     <ClCompile Include="src\XMLScene.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\Appearance.h" />
     <ClInclude Include="include\cgf\cgfappearance.h" />
     <ClInclude Include="include\cgf\cgfapplication.h" />
     <ClInclude Include="include\cgf\cgfaxis.h" />
@@ -95,7 +100,12 @@
     <ClInclude Include="include\gl\glut.h" />
     <ClInclude Include="include\GL\glxew.h" />
     <ClInclude Include="include\GL\wglew.h" />
+    <ClInclude Include="include\OmniLight.h" />
+    <ClInclude Include="include\OrthoCamera.h" />
     <ClInclude Include="include\Parser.h" />
+    <ClInclude Include="include\PerspectiveCamera.h" />
+    <ClInclude Include="include\SpotLight.h" />
+    <ClInclude Include="include\Texture.h" />
     <ClInclude Include="include\tinystr.h" />
     <ClInclude Include="include\tinyxml.h" />
     <ClInclude Include="include\xmlscene.h" />

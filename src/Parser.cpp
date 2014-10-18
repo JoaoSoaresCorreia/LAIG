@@ -48,12 +48,14 @@ Parser::Parser(char *filename){
 	{
 		printf("\nGLOBALS\n\n");
 
+		Globals temp;
+
 		TiXmlElement* drawing = globals->FirstChildElement("drawing");
 
 		if(drawing)
 		{
 			printf("\n\nInside drawing \n");
-			//values to object
+
 			string mode, shading;
 			char *background=NULL;
 			float b1, b2, b3, b4;
@@ -61,6 +63,8 @@ Parser::Parser(char *filename){
 			mode = drawing->Attribute("mode");
 
 			if(mode=="fill" || mode=="line" || mode=="point"){
+
+				temp.set_mode(mode);
 				cout << "Mode = " << mode << endl;
 			}
 			else{
@@ -71,6 +75,8 @@ Parser::Parser(char *filename){
 			shading = drawing->Attribute("shading");
 
 			if(shading=="flat" || shading=="gouraud"){
+
+				temp.set_shading(shading);
 				cout << "Shading = " << shading << endl;
 			}
 			else
@@ -82,6 +88,8 @@ Parser::Parser(char *filename){
 			background = (char*) drawing->Attribute("background");
 
 			if(background && sscanf(background,"%f %f %f %f",&b1, &b2, &b3, &b4) == 4){
+
+				temp.set_background(b1,b2,b3,b4);
 				printf("Background values (b1 b2 b3 b4): %f %f %f %f\n", b1, b2, b3, b4);
 			}
 			else
@@ -105,6 +113,8 @@ Parser::Parser(char *filename){
 			face=culling->Attribute("face");
 
 			if(face=="none" || face=="back" || face=="front" || face=="both"){
+
+				temp.set_face(face);
 				cout << "Face = " << face << endl;
 			}
 			else
@@ -116,6 +126,8 @@ Parser::Parser(char *filename){
 			order=culling->Attribute("order");
 
 			if(order=="ccw" || face=="cw"){
+
+				temp.set_order(order);
 				cout << "Order = " << order << endl;
 			}
 			else
@@ -146,6 +158,7 @@ Parser::Parser(char *filename){
 
 			if(doublesided==0 || doublesided == 1){
 
+				temp.set_doublesided(doublesided);
 				cout<<"Doublesided = "<< boolalpha << doublesided << endl; 
 
 			}
@@ -163,6 +176,7 @@ Parser::Parser(char *filename){
 
 			if(local==0 || local == 1){
 
+				temp.set_local(local);
 				cout<<"Local = "<< boolalpha << local << endl; 
 
 			}
@@ -179,6 +193,7 @@ Parser::Parser(char *filename){
 
 			if(enabled==0 || enabled == 1){
 
+				temp.set_enabled(enabled);
 				cout<<"Enabled = "<< boolalpha << enabled << endl; 
 
 			}
@@ -191,7 +206,8 @@ Parser::Parser(char *filename){
 			ambient = (char*) lighting->Attribute("ambient");
 
 			if(ambient && sscanf(ambient,"%f %f %f %f",&a1, &a2, &a3, &a4) == 4){
-				printf("Background values (b1 b2 b3 b4): %f %f %f %f\n", a1, a2, a3, a4);
+				temp.set_ambient(a1,a2,a3,a4);
+				printf("Ambient values (a1 a2 a3 a4): %f %f %f %f\n", a1, a2, a3, a4);
 			}
 			else
 			{
@@ -201,6 +217,8 @@ Parser::Parser(char *filename){
 
 		}
 
+		this->globals_obj = temp;
+		temp.~Globals();
 	}
 
 
@@ -226,20 +244,28 @@ Parser::Parser(char *filename){
 			if (strcmp(camera->Value(),"perspective")==0){
 				printf("\nInside perspective \n");
 
+				PerspectiveCamera temp;
+
 				string id;
 				float near, far, angle;
 				char *pos;
-				float pos1, pos2, pos3, pos4;
+				float pos1, pos2, pos3;
 				char *target;
-				float t1, t2, t3, t4;
+				float t1, t2, t3;
 
 				id = camera->Attribute("id");
+				temp.set_id(id);
 				cout<<"ID: " << id << endl;
 
 				if(camera->QueryFloatAttribute("near",&near)==TIXML_SUCCESS &&
 					camera->QueryFloatAttribute("far",&far)==TIXML_SUCCESS &&
 					camera->QueryFloatAttribute("angle",&angle)==TIXML_SUCCESS)
 				{
+
+					temp.set_near(near);
+					temp.set_far(far);
+					temp.set_angle(angle);
+
 					printf("Near %f\n", near);
 					printf("Far %f\n", far);
 					printf("Angle %f\n", angle);
@@ -252,6 +278,9 @@ Parser::Parser(char *filename){
 				pos = (char*) camera->Attribute("pos");
 
 				if(pos && sscanf(pos,"%f %f %f",&pos1, &pos2, &pos3) == 3){
+
+					temp.set_pos(pos1, pos2, pos3);
+
 					printf("Pos values (pos1 pos2 pos3): %f %f %f\n", pos1, pos2, pos3);
 				}
 				else
@@ -263,6 +292,9 @@ Parser::Parser(char *filename){
 				target = (char*) camera->Attribute("target");
 
 				if(target && sscanf(target,"%f %f %f",&t1, &t2, &t3) == 3){
+
+					temp.set_target(t1, t2, t3);
+
 					printf("Target values (t1 t2 t3): %f %f %f\n", t1, t2, t3);
 				}
 				else
@@ -271,19 +303,26 @@ Parser::Parser(char *filename){
 					//exit(1);
 				}
 
+				p_cameras.push_back(temp);
+				temp.~PerspectiveCamera();
+
 			}
 
 			if (strcmp(camera->Value(),"ortho")==0){
 				printf("\nInside ortho \n");
 				//values to object
 
+				OrthoCamera temp;
+
 				string id, direction;
 				float near, far, left, right, top, bottom;
 
 				id = camera->Attribute("id");
+				temp.set_id(id);
 				cout<<"ID: " << id << endl;
 
-				id = camera->Attribute("direction");
+				direction = camera->Attribute("direction");
+				temp.set_direction(direction);
 				cout<<"Direction: " << direction << endl;
 
 				if(camera->QueryFloatAttribute("near",&near)==TIXML_SUCCESS &&
@@ -293,6 +332,14 @@ Parser::Parser(char *filename){
 					camera->QueryFloatAttribute("top",&top)==TIXML_SUCCESS &&
 					camera->QueryFloatAttribute("bottom",&bottom)==TIXML_SUCCESS)
 				{
+
+					temp.set_near(near);
+					temp.set_far(far);
+					temp.set_left(left);
+					temp.set_right(right);
+					temp.set_top(top);
+					temp.set_bottom(bottom);
+
 					printf("Near %f\n", near);
 					printf("Far %f\n", far);
 					printf("Left %f\n", left);
@@ -304,6 +351,9 @@ Parser::Parser(char *filename){
 				{
 					printf("Error parsing ortho atributes (near, far, left, right, top, bottom)");
 				}
+
+				o_cameras.push_back(temp);
+				temp.~OrthoCamera();
 
 			}
 
@@ -326,12 +376,15 @@ Parser::Parser(char *filename){
 
 			if(strcmp(light->Attribute("type"),"omni")==0){
 
+				OmniLight temp;
+
 				string id;
 				bool enabled, marker;
 				char *pos;
 				float pos1, pos2, pos3;
 
 				id = light->Attribute("id");
+				temp.set_id(id);
 				cout<<"ID: " << id << endl;
 
 				if(strcmp(light->Attribute("enabled"), "true") == 0)
@@ -342,6 +395,7 @@ Parser::Parser(char *filename){
 
 				if(enabled==0 || enabled == 1){
 
+					temp.set_enabled(enabled);
 					cout<<"Enabled = "<< boolalpha << enabled << endl; 
 
 				}
@@ -359,7 +413,9 @@ Parser::Parser(char *filename){
 
 				if(marker == 0 || marker == 1){
 
+					temp.set_marker(marker);
 					cout<<"Marker = "<< boolalpha << marker << endl; 
+
 
 				}
 				else
@@ -371,6 +427,8 @@ Parser::Parser(char *filename){
 				pos = (char*) light->Attribute("pos");
 
 				if(pos && sscanf(pos,"%f %f %f",&pos1, &pos2, &pos3) == 3){
+
+					temp.set_pos(pos1, pos2, pos3);
 					printf("Pos values (pos1 pos2 pos3): %f %f %f\n", pos1, pos2, pos3);
 				}
 				else
@@ -404,6 +462,15 @@ Parser::Parser(char *filename){
 					value = (char*) component->Attribute("value");
 
 					if(value && sscanf(value,"%f %f %f %f",&v1, &v2, &v3, &v4) == 4){
+						if(type=="ambient"){
+							temp.set_ambient(v1, v2, v3, v4);
+						}
+						else if(type=="diffuse"){
+							temp.set_diffuse(v1, v2, v3, v4);
+						}
+						else if(type=="specular"){
+							temp.set_specular(v1, v2, v3, v4);
+						}
 						printf("Value values (v1 v2 v3 v4): %f %f %f %f\n", v1, v2, v3, v4);
 					}
 					else
@@ -415,9 +482,14 @@ Parser::Parser(char *filename){
 					component=component->NextSiblingElement();
 				}
 
+				o_lights.push_back(temp);
+				temp.~OmniLight();
+
 			}
 
 			if(strcmp(light->Attribute("type"),"spot")==0){
+
+				SpotLight temp;
 
 				string id;
 				bool enabled, marker;
@@ -428,6 +500,7 @@ Parser::Parser(char *filename){
 				float angle, exponent;
 
 				id = light->Attribute("id");
+				temp.set_id(id);
 				cout<<"ID: " << id << endl;
 
 				if(strcmp(light->Attribute("enabled"), "true") == 0)
@@ -437,6 +510,8 @@ Parser::Parser(char *filename){
 				else enabled=false;
 
 				if(enabled==0 || enabled == 1){
+
+					temp.set_enabled(enabled);
 
 					cout<<"Enabled = "<< boolalpha << enabled << endl; 
 
@@ -455,6 +530,8 @@ Parser::Parser(char *filename){
 
 				if(marker == 0 || marker == 1){
 
+					temp.set_marker(marker);
+
 					cout<<"Marker = "<< boolalpha << marker << endl; 
 
 				}
@@ -467,6 +544,9 @@ Parser::Parser(char *filename){
 				pos = (char*) light->Attribute("pos");
 
 				if(pos && sscanf(pos,"%f %f %f",&pos1, &pos2, &pos3) == 3){
+
+					temp.set_pos(pos1, pos2, pos3);
+
 					printf("Pos values (pos1 pos2 pos3): %f %f %f\n", pos1, pos2, pos3);
 				}
 				else
@@ -478,6 +558,9 @@ Parser::Parser(char *filename){
 				target = (char*) light->Attribute("target");
 
 				if(target && sscanf(target,"%f %f %f",&t1, &t2, &t3) == 3){
+
+					temp.set_target(t1, t2, t3);
+
 					printf("Target values (t1 t2 t3): %f %f %f\n", t1, t2, t3);
 				}
 				else
@@ -489,6 +572,10 @@ Parser::Parser(char *filename){
 				if(light->QueryFloatAttribute("angle",&angle)==TIXML_SUCCESS &&
 					light->QueryFloatAttribute("exponent",&exponent)==TIXML_SUCCESS)
 				{
+
+					temp.set_angle(angle);
+					temp.set_exponent(exponent);
+
 					printf("Angle %f\n", angle);
 					printf("Exponent %f\n", exponent);
 				}
@@ -522,6 +609,17 @@ Parser::Parser(char *filename){
 					value = (char*) component->Attribute("value");
 
 					if(value && sscanf(value,"%f %f %f %f",&v1, &v2, &v3, &v4) == 4){
+
+						if(type=="ambient"){
+							temp.set_ambient(v1, v2, v3, v4);
+						}
+						else if(type=="diffuse"){
+							temp.set_diffuse(v1, v2, v3, v4);
+						}
+						else if(type=="specular"){
+							temp.set_specular(v1, v2, v3, v4);
+						}
+
 						printf("Value values (v1 v2 v3 v4): %f %f %f %f\n", v1, v2, v3, v4);
 					}
 					else
@@ -532,6 +630,9 @@ Parser::Parser(char *filename){
 
 					component=component->NextSiblingElement();
 				}
+
+				s_lights.push_back(temp);
+				temp.~SpotLight();
 
 			}
 
@@ -555,18 +656,26 @@ Parser::Parser(char *filename){
 
 		while(texture)
 		{
+			Texture temp;
+
 			string id, file;
 			float texlength_s, texlength_t;
 
 			id = texture->Attribute("id");
+			temp.set_id(id);
 			cout<< "ID: " << id <<endl;
 
 			file = texture->Attribute("file");
+			temp.set_file(file);
 			cout<< "File = " << file << endl;
 
 			if( texture->QueryFloatAttribute("texlength_s",&texlength_s)==TIXML_SUCCESS &&
 				texture->QueryFloatAttribute("texlength_t",&texlength_t)==TIXML_SUCCESS)
 			{
+
+				temp.set_texlength_s(texlength_s);
+				temp.set_texlength_t(texlength_t);
+
 				printf("Texlength_s %f\n", texlength_s);
 				printf("Texlength_t %f\n", texlength_t);
 			}
@@ -575,6 +684,9 @@ Parser::Parser(char *filename){
 				printf("Error parsing texlength_s && texlength_t\n");
 				//exit(1);
 			} 
+
+			textures_obj.push_back(temp);
+			temp.~Texture();
 
 			texture=texture->NextSiblingElement();
 		}
@@ -598,16 +710,21 @@ Parser::Parser(char *filename){
 
 		while(appearance)
 		{
+			Appearance temp;
+
 			string id, textureref;
 			float shininess;
 
 			id = appearance->Attribute("id");
+			temp.set_id(id);
 			cout << "ID: "<< id << endl;
 
 			textureref = appearance->Attribute("textureref");
+			temp.set_textureref(textureref);
 			cout << "Textureref= "<< textureref << endl;
 
 			if(appearance->QueryFloatAttribute("shininess",&shininess)==TIXML_SUCCESS){
+				temp.set_shininess(shininess);
 				printf("Sininess %f\n", shininess);
 			}
 
@@ -634,6 +751,17 @@ Parser::Parser(char *filename){
 				value = (char*) component->Attribute("value");
 
 				if(value && sscanf(value,"%f %f %f %f",&v1, &v2, &v3, &v4) == 4){
+
+					if(type=="ambient"){
+						temp.set_ambient(v1, v2, v3, v4);
+					}
+					else if(type=="diffuse"){
+						temp.set_diffuse(v1, v2, v3, v4);
+					}
+					else if(type=="specular"){
+						temp.set_specular(v1, v2, v3, v4);
+					}
+
 					printf("Value values (v1 v2 v3 v4): %f %f %f %f\n", v1, v2, v3, v4);
 				}
 				else
@@ -643,6 +771,9 @@ Parser::Parser(char *filename){
 				} 
 				component=component->NextSiblingElement();
 			}
+
+			appearances_obj.push_back(temp);
+			temp.~Appearance();
 
 			appearance=appearance->NextSiblingElement();
 
