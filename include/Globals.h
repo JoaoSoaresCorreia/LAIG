@@ -41,7 +41,7 @@ public:
 	
 	/*lighting*/
 	void set_ambient(float a1, float a2, float a3, float a4);
-	float get_ambient(int n){return ambient[n];}
+	float* get_ambient(){return this->ambient;}
 
 	void set_doublesided(bool doublesided){this->doublesided=doublesided; return;}
 	bool get_doublesided(){return doublesided;}

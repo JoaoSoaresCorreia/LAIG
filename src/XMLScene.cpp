@@ -1,170 +1,112 @@
 #include "XMLScene.h"
 
-XMLScene::XMLScene(char *filename)
-{
+XMLScene::XMLScene(char *filename){
 
-	// Read XML from file
-
-	doc=new TiXmlDocument( filename );
-	bool loadOkay = doc->LoadFile();
-
-	if ( !loadOkay )
-	{
-		printf( "Could not load file '%s'. Error='%s'. Exiting.\n", filename, doc->ErrorDesc() );
-		exit( 1 );
-	}
-
-	TiXmlElement* dgxElement= doc->FirstChildElement( "dgx" );
-
-	if (dgxElement == NULL)
-	{
-		printf("Main dgx block element not found! Exiting!\n");
-		exit(1);
-	}
-
-	initElement = dgxElement->FirstChildElement( "Init" );
-	matsElement = dgxElement->FirstChildElement( "Materials" );
-	textsElement =  dgxElement->FirstChildElement( "Textures" );
-	leavesElement =  dgxElement->FirstChildElement( "Leaves" );
-	nodesElement =  dgxElement->FirstChildElement( "Nodes" );
-
-	graphElement =  dgxElement->FirstChildElement( "Graph" );
-
-
-	// Init
-	// An example of well-known, required nodes
-
-	if (initElement == NULL)
-		printf("Init block not found!\n");
-	else
-	{
-		printf("Processing init:\n");
-		// frustum: example of a node with individual attributes
-		TiXmlElement* frustumElement=initElement->FirstChildElement("frustum");
-		if (frustumElement)
-		{
-			float near,far;
-
-			if (frustumElement->QueryFloatAttribute("near",&near)==TIXML_SUCCESS && 
-				frustumElement->QueryFloatAttribute("far",&far)==TIXML_SUCCESS
-				)
-				printf("  frustum attributes: %f %f\n", near, far);
-			else
-				printf("Error parsing frustum\n");
-		}
-		else
-			printf("frustum not found\n");
-
-
-		// translate: example of a node with an attribute comprising several float values
-		// It shows an example of extracting an attribute's value, and then further parsing that value 
-		// to extract individual values
-		TiXmlElement* translateElement=initElement->FirstChildElement("translate");
-		if (translateElement)
-		{
-			char *valString=NULL;
-			float x,y,z;
-
-			valString=(char *) translateElement->Attribute("xyz");
-
-			if(valString && sscanf(valString,"%f %f %f",&x, &y, &z)==3)
-			{
-				printf("  translate values (XYZ): %f %f %f\n", x, y, z);
-			}
-			else
-				printf("Error parsing translate");
-		}
-		else
-			printf("translate not found\n");		
-
-		// repeat for each of the variables as needed
-	}
-
-	// Other blocks could be validated/processed here
-
-
-	// graph section
-	if (graphElement == NULL)
-		printf("Graph block not found!\n");
-	else
-	{
-		char *prefix="  -";
-		TiXmlElement *node=graphElement->FirstChildElement();
-
-		while (node)
-		{
-
-			printf("Node id '%s' - Descendants:\n",node->Attribute("id"));
-			TiXmlElement *child=node->FirstChildElement();
-
-			while (child)
-			{
-				if (strcmp(child->Value(),"Node")==0)
-				{
-					// access node data by searching for its id in the nodes section
-					
-					TiXmlElement *noderef=findChildByAttribute(nodesElement,"id",child->Attribute("id"));
-
-					if (noderef)
-					{
-						// print id
-						printf("  - Node id: '%s'\n", child->Attribute("id"));
-
-						// prints some of the data
-						printf("    - Material id: '%s' \n", noderef->FirstChildElement("material")->Attribute("id"));
-						printf("    - Texture id: '%s' \n", noderef->FirstChildElement("texture")->Attribute("id"));
-
-						// repeat for other leaf details
-					}
-					else
-						printf("  - Node id: '%s': NOT FOUND IN THE NODES SECTION\n", child->Attribute("id"));
-
-				}
-				if (strcmp(child->Value(),"Leaf")==0)
-				{
-					// access leaf data by searching for its id in the leaves section
-					TiXmlElement *leaf=findChildByAttribute(leavesElement,"id",child->Attribute("id"));
-
-					if (leaf)
-					{
-						// it is a leaf and it is present in the leaves section
-						printf("  - Leaf id: '%s' ; type: '%s'\n", child->Attribute("id"), leaf->Attribute("type"));
-
-						// repeat for other leaf details
-					}
-					else
-						printf("  - Leaf id: '%s' - NOT FOUND IN THE LEAVES SECTION\n",child->Attribute("id"));
-				}
-
-				child=child->NextSiblingElement();
-			}
-			node=node->NextSiblingElement();
-		}
-	}
+	this->filename=filename;
 
 }
 
-XMLScene::~XMLScene()
-{
-	delete(doc);
+void XMLScene::loadFile(){
+	Parser *p = new Parser(this->filename);
+	this->p=p;
+	return;
 }
 
-//-------------------------------------------------------
+void XMLScene::init(){
+	/*MOST IMPORTANT! LOAD FILE FIRST*/
+	loadFile();
 
-TiXmlElement *XMLScene::findChildByAttribute(TiXmlElement *parent,const char * attr, const char *val)
-// Searches within descendants of a parent for a node that has an attribute _attr_ (e.g. an id) with the value _val_
-// A more elaborate version of this would rely on XPath expressions
-{
-	TiXmlElement *child=parent->FirstChildElement();
-	int found=0;
+	// Enables lighting computations
+	glEnable(GL_LIGHTING);
 
-	while (child && !found)
-		if (child->Attribute(attr) && strcmp(child->Attribute(attr),val)==0)
-			found=1;
+	//set globals
+	set_upGlobals();
+
+	glMatrixMode(GL_MODELVIEW);
+
+
+
+	setUpdatePeriod(30);
+	return;
+}
+void XMLScene::display(){
+
+	// Clear image and depth buffer everytime we update the scene
+	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+
+	// Initialize Model-View matrix as identity (no transformation
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
+	axis.draw();
+	CGFscene::activeCamera->applyView();
+
+	//to complex function, SHALL BE modified
+	set_upLights();
+
+	/*LE POWER DRAW*/
+	
+	glPushMatrix();
+	glGetFloatv(GL_MODELVIEW_MATRIX, &getParser()->get_root_node().Node::transMatrix[0]);
+	getParser()->get_root_node().setTransMatrix(getParser()->get_root_node().Node::transMatrix);
+	getParser()->get_root_node().draw(getParser()->get_root_node().get_le_appearance());
+	glPopMatrix();
+
+
+
+	glutSwapBuffers();
+	return;
+}
+
+
+void XMLScene::set_upGlobals(){
+
+	glClearColor(p->getGlobals().get_background(0), p->getGlobals().get_background(1), p->getGlobals().get_background(2), p->getGlobals().get_background(3));
+	glPolygonMode(GL_FRONT_AND_BACK, p->getGlobals().get_mode());
+	glShadeModel(p->getGlobals().get_shading());
+	glCullFace(p->getGlobals().get_face());
+	glFrontFace(p->getGlobals().get_order());
+	glLightModelf(GL_LIGHT_MODEL_TWO_SIDE, p->getGlobals().get_doublesided());
+	glLightModelf(GL_LIGHT_MODEL_LOCAL_VIEWER, p->getGlobals().get_local());
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, p->getGlobals().get_ambient());
+
+	return;
+}
+
+void XMLScene::set_upLights(){
+
+	/*First Spot lights*/
+	for(unsigned int i = 0; i<p->get_s_lights().size(); i++){
+
+		if(p->get_s_lights()[i].get_enabled() == true){
+
+			p->get_s_lights()[i].enable();
+			p->get_s_lights()[i].draw();
+
+		}
 		else
-			child=child->NextSiblingElement();
+			p->get_s_lights()[i].disable();
 
-	return child;
+		p->get_s_lights()[i].update();
+
+	}
+
+	/*Then Omni Lights*/
+
+	for(unsigned int i = 0; i<p->get_o_lights().size(); i++){
+
+		if(p->get_o_lights()[i].get_enabled() == true){
+
+			p->get_o_lights()[i].enable();
+			p->get_o_lights()[i].draw();
+
+		}
+		else
+			p->get_o_lights()[i].disable();
+
+		p->get_o_lights()[i].update();
+	}
+
+
+	return;
 }
-
-

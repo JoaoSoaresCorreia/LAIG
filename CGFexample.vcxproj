@@ -73,10 +73,12 @@
     <ClCompile Include="src\ExampleObject.cpp" />
     <ClCompile Include="src\Globals.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Node.cpp" />
     <ClCompile Include="src\OmniLight.cpp" />
     <ClCompile Include="src\Parser.cpp" />
     <ClCompile Include="src\PerspectiveCamera.cpp" />
     <ClCompile Include="src\SpotLight.cpp" />
+    <ClCompile Include="src\Transformation.cpp" />
     <ClCompile Include="src\XMLScene.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -100,15 +102,18 @@
     <ClInclude Include="include\gl\glut.h" />
     <ClInclude Include="include\GL\glxew.h" />
     <ClInclude Include="include\GL\wglew.h" />
+    <ClInclude Include="include\Node.h" />
     <ClInclude Include="include\OmniLight.h" />
     <ClInclude Include="include\OrthoCamera.h" />
     <ClInclude Include="include\Parser.h" />
     <ClInclude Include="include\PerspectiveCamera.h" />
+    <ClInclude Include="include\Point.h" />
     <ClInclude Include="include\SpotLight.h" />
     <ClInclude Include="include\Texture.h" />
     <ClInclude Include="include\tinystr.h" />
     <ClInclude Include="include\tinyxml.h" />
-    <ClInclude Include="include\xmlscene.h" />
+    <ClInclude Include="include\Transformation.h" />
+    <ClInclude Include="include\XMLScene.h" />
     <ClInclude Include="src\DemoScene.h" />
     <ClInclude Include="src\ExampleObject.h" />
   </ItemGroup>

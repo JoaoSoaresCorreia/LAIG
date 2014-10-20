@@ -2,7 +2,7 @@
 #include <exception>
 
 #include "CGFapplication.h"
-#include "DemoScene.h"
+#include "XMLScene.h"
 #include "Parser.h"
 #include "Globals.h"
 
@@ -12,20 +12,20 @@ using std::exception;
 
 int main(int argc, char* argv[]) {
 
-	Parser *p = new Parser("graph_beta.anf");
-	printf("Done, Created!");
-	cout<<"OrthoID= "<< p->get_o_cameras()[0].get_id() << endl;
-
-
-/*
 	CGFapplication app = CGFapplication();
-
+	
+	XMLScene *xml_scene;
+	xml_scene = new XMLScene("LAIG_TP1_ANF_T01_G02_v1.anf");
+	/**
+	if(argc == 2)
+		xml_scene = new XMLScene(argv[1]);
+	else
+		exit(1);
+	**/
 	try {
 		app.init(&argc, argv);
-
-		app.setScene(new DemoScene());
+		app.setScene(xml_scene);
 		app.setInterface(new CGFinterface());
-		
 		app.run();
 	}
 	catch(GLexception& ex) {
@@ -37,6 +37,5 @@ int main(int argc, char* argv[]) {
 		return -1;
 	}
 
-*/
 	return 0;
 }

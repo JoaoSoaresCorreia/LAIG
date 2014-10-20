@@ -1,26 +1,28 @@
 #ifndef _XMLSCENE_H_
 #define _XMLSCENE_H_
 
-#include "tinyxml.h"
+#define BUFFSIZE 256
+#include "Parser.h"
+#include "CGFscene.h"
+#include "CGFshader.h"
 
-class XMLScene
-{
+class XMLScene : public CGFscene{
+	
+	char *filename;
+	Parser *p;
+
 public:
 	XMLScene(char *filename);
-	~XMLScene();
+	~XMLScene(){}
+	void loadFile();
+	Parser* getParser(){return this->p;}
+	void init();
+	void display();
+	void set_upGlobals();
+	void set_upLights();
 
-	static TiXmlElement *findChildByAttribute(TiXmlElement *parent,const char * attr, const char *val);
-	
-protected:
-
-	TiXmlDocument* doc;
-
-	TiXmlElement* initElement; 
-	TiXmlElement* matsElement;
-	TiXmlElement* textsElement;
-	TiXmlElement* leavesElement;
-	TiXmlElement* nodesElement;
-	TiXmlElement* graphElement;
 };
+
+
 
 #endif

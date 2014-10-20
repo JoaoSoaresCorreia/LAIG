@@ -218,7 +218,7 @@ Parser::Parser(char *filename){
 		}
 
 		this->globals_obj = temp;
-		temp.~Globals();
+		//temp.~Globals();
 	}
 
 
@@ -304,7 +304,7 @@ Parser::Parser(char *filename){
 				}
 
 				p_cameras.push_back(temp);
-				temp.~PerspectiveCamera();
+				//temp.~PerspectiveCamera();
 
 			}
 
@@ -353,7 +353,7 @@ Parser::Parser(char *filename){
 				}
 
 				o_cameras.push_back(temp);
-				temp.~OrthoCamera();
+				//temp.~OrthoCamera();
 
 			}
 
@@ -482,8 +482,9 @@ Parser::Parser(char *filename){
 					component=component->NextSiblingElement();
 				}
 
+				temp.create();
 				o_lights.push_back(temp);
-				temp.~OmniLight();
+				//temp.~OmniLight();
 
 			}
 
@@ -631,8 +632,9 @@ Parser::Parser(char *filename){
 					component=component->NextSiblingElement();
 				}
 
+				temp.create();
 				s_lights.push_back(temp);
-				temp.~SpotLight();
+				//temp.~SpotLight();
 
 			}
 
@@ -656,25 +658,25 @@ Parser::Parser(char *filename){
 
 		while(texture)
 		{
-			Texture temp;
 
 			string id, file;
 			float texlength_s, texlength_t;
 
 			id = texture->Attribute("id");
-			temp.set_id(id);
-			cout<< "ID: " << id <<endl;
-
 			file = texture->Attribute("file");
-			temp.set_file(file);
+
+			Texture *temp = new Texture(file);			
+			temp->set_id(id);
+
 			cout<< "File = " << file << endl;
+			cout<< "ID: " << id <<endl;
 
 			if( texture->QueryFloatAttribute("texlength_s",&texlength_s)==TIXML_SUCCESS &&
 				texture->QueryFloatAttribute("texlength_t",&texlength_t)==TIXML_SUCCESS)
 			{
 
-				temp.set_texlength_s(texlength_s);
-				temp.set_texlength_t(texlength_t);
+				temp->set_texlength_s(texlength_s);
+				temp->set_texlength_t(texlength_t);
 
 				printf("Texlength_s %f\n", texlength_s);
 				printf("Texlength_t %f\n", texlength_t);
@@ -686,7 +688,7 @@ Parser::Parser(char *filename){
 			} 
 
 			textures_obj.push_back(temp);
-			temp.~Texture();
+			//temp->~Texture();
 
 			texture=texture->NextSiblingElement();
 		}
@@ -710,21 +712,22 @@ Parser::Parser(char *filename){
 
 		while(appearance)
 		{
-			Appearance temp;
+			Appearance *temp = new Appearance();
 
-			string id, textureref;
+			string id, textureref="";
 			float shininess;
 
 			id = appearance->Attribute("id");
-			temp.set_id(id);
+			temp->set_id(id);
 			cout << "ID: "<< id << endl;
 
-			textureref = appearance->Attribute("textureref");
-			temp.set_textureref(textureref);
+			if(appearance->Attribute("textureref") != NULL)
+				textureref = appearance->Attribute("textureref");
+			temp->set_textureref(textureref);
 			cout << "Textureref= "<< textureref << endl;
 
 			if(appearance->QueryFloatAttribute("shininess",&shininess)==TIXML_SUCCESS){
-				temp.set_shininess(shininess);
+				temp->set_shininess(shininess);
 				printf("Sininess %f\n", shininess);
 			}
 
@@ -753,13 +756,13 @@ Parser::Parser(char *filename){
 				if(value && sscanf(value,"%f %f %f %f",&v1, &v2, &v3, &v4) == 4){
 
 					if(type=="ambient"){
-						temp.set_ambient(v1, v2, v3, v4);
+						temp->set_ambient(v1, v2, v3, v4);
 					}
 					else if(type=="diffuse"){
-						temp.set_diffuse(v1, v2, v3, v4);
+						temp->set_diffuse(v1, v2, v3, v4);
 					}
 					else if(type=="specular"){
-						temp.set_specular(v1, v2, v3, v4);
+						temp->set_specular(v1, v2, v3, v4);
 					}
 
 					printf("Value values (v1 v2 v3 v4): %f %f %f %f\n", v1, v2, v3, v4);
@@ -771,9 +774,13 @@ Parser::Parser(char *filename){
 				} 
 				component=component->NextSiblingElement();
 			}
+			
 
+			temp->set_sWrap(get_textl_s(textureref));
+			temp->set_tWrap(get_textl_t(textureref));
+			temp->create(get_refTexure(textureref));
 			appearances_obj.push_back(temp);
-			temp.~Appearance();
+			//temp.~Appearance();
 
 			appearance=appearance->NextSiblingElement();
 
@@ -793,16 +800,41 @@ Parser::Parser(char *filename){
 
 		printf("\n GRAPH\n\n");
 
-		string id;
-		id=graph->Attribute("rootid");
-		cout<<"ROOTID: "<<id<<endl;
+		const char *rootid;
+		char * atemp;
+		rootid=graph->Attribute("rootid");
+		cout<<"ROOTID: "<<rootid<<endl;
 
 		//printf("Graph root id = %s ", graph->Attribute("rootid"));
 		node = graph->FirstChildElement();
 
+		while(node)
+		{
+			CompositeNode temp;
+			temporary_nodes.insert(std::pair<string, CompositeNode>(node->Attribute("id"), temp));
+			node=node->NextSiblingElement();
+		}
+
+
+
+		/*Second iteration! First one is to create all nodes!*/
+
+		node = graph->FirstChildElement();
+
+		while(true){
+
+			atemp=(char *) node->Attribute("id");
+			if(strcmp(atemp,rootid)==0)
+				break;
+
+			node=node->NextSiblingElement();
+		}
 
 		while(node)
 		{
+			string id;
+			id = node->Attribute("id");
+			temporary_nodes.find(id)->second.set_id(id);
 			printf("Node id '%s' \n", node->Attribute("id"));
 			TiXmlElement *child=node->FirstChildElement();
 
@@ -810,11 +842,91 @@ Parser::Parser(char *filename){
 			{
 				if (strcmp(child->Value(),"transforms")==0)
 				{
-					printf("inside transforms\n");
+
+					transform = child->FirstChildElement();
+
+					while(transform)
+					{
+						char* type_temp;
+						type_temp = (char*)transform->Attribute("type");
+
+						if(strcmp(type_temp,"rotate")==0){
+
+							string axis;
+							float angle;
+
+							axis = transform->Attribute("axis");
+
+							if(transform->QueryFloatAttribute("angle",&angle)==TIXML_SUCCESS){
+								printf("Angle %f\n", angle);
+							}
+
+							Rotate *r = new Rotate(axis, angle);
+							temporary_nodes.find(id)->second.push_tranformation(r);
+
+						}
+
+						/***/
+
+						if(strcmp(type_temp,"scale")==0){
+
+							char *factor;
+							float f1, f2, f3;
+							factor = (char*) transform->Attribute("factor");
+
+							if(factor && sscanf(factor,"%f %f %f",&f1, &f2, &f3) == 3){
+
+								Scale *s=new Scale(f1, f2, f3);
+								temporary_nodes.find(id)->second.push_tranformation(s);
+
+							}
+						}
+
+						/***/
+
+						if(strcmp(type_temp,"translate")==0){
+
+							char *to;
+							float t1, t2, t3;
+							to = (char*) transform->Attribute("to");
+
+							if(to && sscanf(to,"%f %f %f",&t1, &t2, &t3) == 3){
+
+								Translate *t=new Translate(t1, t2, t3);
+
+								temporary_nodes.find(id)->second.push_tranformation(t);
+
+							}
+						}
+
+						transform = transform->NextSiblingElement();
+					}
 				}
+
 
 				if (strcmp(child->Value(),"appearanceref")==0)
 				{
+
+					/**/
+					if(child->Attribute("id") == "inherit")
+					{
+						Appearance *p = new Appearance();
+						p = NULL;
+						temporary_nodes.find(id)->second.push_appearance(p);
+					}
+					else{
+						string appear_id;
+						appear_id = child->Attribute("id");
+						/*
+						Appearance *p = new Appearance();
+						p->set_id(id);
+						*/
+
+						temporary_nodes.find(id)->second.push_appearance(setAppearance(appear_id));
+						/*add the Appearance with the name  id="Appearanceref"*/
+					}
+
+
 					printf("inside appearanceref\n");
 				}
 
@@ -831,61 +943,321 @@ Parser::Parser(char *filename){
 
 						/*Inside primitives, and recognition of primitive*/
 						/*Create object based on primitive*/
+						if (strcmp(object_primitive->Value(),"rectangle")==0){
+							Rectangle *r=new Rectangle();
 
-						printf("primitive: '%s' \n", object_primitive->Value());
+							char *xy1;
+							char *xy2;
+							float x1, y1, x2, y2;
 
+							xy1 = (char*) object_primitive->Attribute("xy1");
+
+							if(xy1 && sscanf(xy1,"%f %f",&x1, &y1) == 2){
+								r->set_x1(x1);
+								r->set_y1(y1);
+							}
+
+							xy2 = (char*) object_primitive->Attribute("xy2");
+
+							if(xy2 && sscanf(xy2,"%f %f",&x2, &y2) == 2){
+								r->set_x2(x2);
+								r->set_y2(y2);
+							}
+
+							printf("primitive: '%s' \n", object_primitive->Value());
+
+							temporary_nodes.find(id)->second.push_descendents(r);
+
+						}
 						object_primitive = object_primitive->NextSiblingElement();
 					}
 
-					/*
-					// access node data by searching for its id in the nodes section
-
-					TiXmlElement *noderef=findChildByAttribute(nodesElement,"id",child->Attribute("id"));
-
-					if (noderef)
-					{
-					// print id
-					printf("  - Node id: '%s'\n", child->Attribute("id"));
-
-					// prints some of the data
-					printf("    - Material id: '%s' \n", noderef->FirstChildElement("material")->Attribute("id"));
-					printf("    - Texture id: '%s' \n", noderef->FirstChildElement("texture")->Attribute("id"));
-
-					// repeat for other leaf details
-					}
-					else
-					printf("  - Node id: '%s': NOT FOUND IN THE NODES SECTION\n", child->Attribute("id"));
-					*/
 
 				}
-				/*
-				if (strcmp(child->Value(),"Leaf")==0)
-				{
-				// access leaf data by searching for its id in the leaves section
-				TiXmlElement *leaf=findChildByAttribute(leavesElement,"id",child->Attribute("id"));
-
-				if (leaf)
-				{
-				// it is a leaf and it is present in the leaves section
-				printf("  - Leaf id: '%s' ; type: '%s'\n", child->Attribute("id"), leaf->Attribute("type"));
-
-				// repeat for other leaf details
-				}
-				else
-				printf("  - Leaf id: '%s' - NOT FOUND IN THE LEAVES SECTION\n",child->Attribute("id"));
-				}
-				*/
 
 				if (strcmp(child->Value(),"descendants")==0)
 				{
+					TiXmlElement *descendent = child->FirstChildElement();
+
+					while(descendent){
+						string noderef;
+						noderef = descendent->Attribute("id");
+
+						temporary_nodes.find(id)->second.push_descendents(getDescendent(noderef));
+
+						descendent = descendent->NextSiblingElement();
+
+					}
+
+					//descendentes_id.push_back(child->Attribute("id"));
 					printf("inside descendants\n");
 				}
 
 				child=child->NextSiblingElement();
 			}
 
-			node=node->NextSiblingElement();
+			root_node = temporary_nodes.find(id)->second;
+			/*maybe a break;*/
+			break;
+
 		}
 	}
+};
+
+
+Appearance* Parser::setAppearance(string appear_id){
+
+	for(unsigned int i =0; i<appearances_obj.size(); i++){
+		if(appearances_obj[i]->get_id() == appear_id)
+		{
+			return appearances_obj[i];
+		}
+	}
+	return NULL;/*Impossible because all objects must have an appearance*/
+}
+
+
+CGFtexture* Parser::get_refTexure(string textureref){
+
+	for(unsigned int i = 0; i<textures_obj.size(); i++){
+
+		if(textures_obj[i]->get_id() == textureref){
+
+			return textures_obj[i]->get_textureMapped();
+
+		}
+
+	}
+	return NULL;
 
 }
+
+float Parser::get_textl_s(string textureref){
+
+	for(unsigned int i = 0; i<textures_obj.size(); i++){
+
+		if(textures_obj[i]->get_id() == textureref){
+
+			return textures_obj[i]->get_texlength_s();
+
+		}
+
+	}
+	return 0;
+
+}
+
+float Parser::get_textl_t(string textureref){
+
+	for(unsigned int i = 0; i<textures_obj.size(); i++){
+
+		if(textures_obj[i]->get_id() == textureref){
+
+			return textures_obj[i]->get_texlength_t();
+
+		}
+
+	}
+	return 0;
+
+}
+
+
+
+
+CompositeNode* Parser::getDescendent(string noderef){
+
+	printf("\n DESCENDENT\n\n");
+
+	node = graph->FirstChildElement();
+
+	char *temp_noderef;
+	const char *actual_noderef = noderef.c_str();
+
+	while(true){
+
+		temp_noderef=(char *) node->Attribute("id");
+		if(strcmp(temp_noderef, actual_noderef)==0)
+			break;
+
+		node=node->NextSiblingElement();
+	}
+
+	/*Dentro do nó descendente*/
+	while(node)
+	{
+		string id;
+		id = node->Attribute("id");
+		temporary_nodes.find(id)->second.set_id(id);
+		printf("Node id '%s' \n", node->Attribute("id"));
+		TiXmlElement *child=node->FirstChildElement();
+
+		while(child)
+		{
+			if (strcmp(child->Value(),"transforms")==0)
+			{
+
+				transform = child->FirstChildElement();
+
+				while(transform)
+				{
+					char* type_temp;
+					type_temp = (char*)transform->Attribute("type");
+
+					if(strcmp(type_temp,"rotate")==0){
+
+						string axis;
+						float angle;
+
+						axis = transform->Attribute("axis");
+
+						if(transform->QueryFloatAttribute("angle",&angle)==TIXML_SUCCESS){
+							printf("Angle %f\n", angle);
+						}
+
+						Rotate *r = new Rotate(axis, angle);
+						temporary_nodes.find(id)->second.push_tranformation(r);
+
+					}
+
+					/***/
+
+					if(strcmp(type_temp,"scale")==0){
+
+						char *factor;
+						float f1, f2, f3;
+						factor = (char*) transform->Attribute("factor");
+
+						if(factor && sscanf(factor,"%f %f %f",&f1, &f2, &f3) == 3){
+
+							Scale *s=new Scale(f1, f2, f3);
+							temporary_nodes.find(id)->second.push_tranformation(s);
+
+						}
+					}
+
+					/***/
+
+					if(strcmp(type_temp,"translate")==0){
+
+						char *to;
+						float t1, t2, t3;
+						to = (char*) transform->Attribute("to");
+
+						if(to && sscanf(to,"%f %f %f",&t1, &t2, &t3) == 3){
+
+							Translate *t=new Translate(t1, t2, t3);
+
+							temporary_nodes.find(id)->second.push_tranformation(t);
+
+						}
+					}
+
+					transform = transform->NextSiblingElement();
+				}
+			}
+
+
+			if (strcmp(child->Value(),"appearanceref")==0)
+			{
+
+				/**/
+				//if(child->Attribute("id") == "inherit")
+				char* app_t_t;
+				app_t_t = (char*)child->Attribute("id");
+
+				if(strcmp(app_t_t,"inherit")==0)
+				{
+					Appearance *p = new Appearance();
+					p = NULL;
+					temporary_nodes.find(id)->second.push_appearance(p);
+				}
+				else{
+					string appear_id;
+					appear_id = child->Attribute("id");
+					/*
+					Appearance *p = new Appearance();
+					p->set_id(id);
+					*/
+
+					temporary_nodes.find(id)->second.push_appearance(setAppearance(appear_id));
+					/*add the Appearance with the name  id="Appearanceref"*/
+				}
+
+
+				printf("inside appearanceref\n");
+			}
+
+
+			if (strcmp(child->Value(),"primitives")==0)
+			{
+				//access primitives information
+
+				printf("Inside primitives \n");
+
+				TiXmlElement *object_primitive = child->FirstChildElement();
+
+				while(object_primitive){
+
+					/*Inside primitives, and recognition of primitive*/
+					/*Create object based on primitive*/
+					if (strcmp(object_primitive->Value(),"rectangle")==0){
+						Rectangle *r=new Rectangle();
+
+						char *xy1;
+						char *xy2;
+						float x1, y1, x2, y2;
+
+						xy1 = (char*) object_primitive->Attribute("xy1");
+
+						if(xy1 && sscanf(xy1,"%f %f",&x1, &y1) == 2){
+							r->set_x1(x1);
+							r->set_y1(y1);
+						}
+
+						xy2 = (char*) object_primitive->Attribute("xy2");
+
+						if(xy2 && sscanf(xy2,"%f %f",&x2, &y2) == 2){
+							r->set_x2(x2);
+							r->set_y2(y2);
+						}
+
+						printf("primitive: '%s' \n", object_primitive->Value());
+
+						temporary_nodes.find(id)->second.push_descendents(r);
+
+					}
+					object_primitive = object_primitive->NextSiblingElement();
+				}
+
+
+			}
+
+			if (strcmp(child->Value(),"descendants")==0)
+			{
+				TiXmlElement *descendent = child->FirstChildElement();
+
+				while(descendent){
+					string noderef;
+					noderef = descendent->Attribute("id");
+
+					temporary_nodes.find(id)->second.push_descendents(getDescendent(noderef));
+
+					descendent = descendent->NextSiblingElement();
+
+				}
+
+				//descendentes_id.push_back(child->Attribute("id"));
+				printf("inside descendants\n");
+			}
+
+			child=child->NextSiblingElement();
+		}
+
+		return &temporary_nodes.find(id)->second;
+
+	}
+
+	return NULL;
+}
+
